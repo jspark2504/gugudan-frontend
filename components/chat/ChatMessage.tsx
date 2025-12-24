@@ -1,6 +1,6 @@
-export function ChatMessage({ role, content }: { role: "USER" | "ASSISTANT"; content: string }) {
+import { HandThumbUpIcon, HandThumbDownIcon } from "@heroicons/react/24/outline";
+export function ChatMessage({ message_id, role, content, onFeedback }: { message_id?: number; role: "USER" | "ASSISTANT"; content: string; onFeedback?: (msgId: number, score: "LIKE" | "DISLIKE") => void }) {
   const isUser = role === "USER";
-
   return (
     <div className={`flex w-full mb-4 animate-in fade-in slide-in-from-bottom-2 duration-300 ${isUser ? "justify-end" : "justify-start"}`}>
       <div className={`flex gap-3 max-w-[85%] ${isUser ? "flex-row-reverse" : "flex-row"}`}>
@@ -23,6 +23,16 @@ export function ChatMessage({ role, content }: { role: "USER" | "ASSISTANT"; con
                <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce [animation-delay:0.2s]" />
                <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce [animation-delay:0.4s]" />
              </div>
+          )}
+          {!isUser && content && message_id && onFeedback && (
+            <div className="flex items-center gap-2 mt-2 pt-2 border-t border-gray-100">
+              <button onClick={() => onFeedback(message_id, "LIKE")} className="p-1 hover:bg-gray-100 rounded transition-colors group">
+                <HandThumbUpIcon className="w-3.5 h-3.5 text-gray-400 group-hover:text-blue-500" />
+              </button>
+              <button onClick={() => onFeedback(message_id, "DISLIKE")} className="p-1 hover:bg-gray-100 rounded transition-colors group">
+                <HandThumbDownIcon className="w-3.5 h-3.5 text-gray-400 group-hover:text-pink-500" />
+              </button>
+            </div>
           )}
         </div>
       </div>

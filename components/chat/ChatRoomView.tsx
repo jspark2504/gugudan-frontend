@@ -2,9 +2,11 @@
 
 import { useEffect, useRef, useState } from "react";
 import { ChatMessage } from "./ChatMessage";
+import { Feedback } from "./Feedback";
 import { StopIcon, PaperAirplaneIcon, SparklesIcon, HeartIcon, ChatBubbleLeftEllipsisIcon, ArrowsRightLeftIcon, FaceSmileIcon } from "@heroicons/react/24/outline";
 
 type Message = {
+  message_id?: number;
   role: "USER" | "ASSISTANT";
   content: string;
 };
@@ -20,6 +22,8 @@ export function ChatRoomView({ roomId, onRoomCreated }: Props) {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [isComposing, setIsComposing] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [targetMessageId, setTargetMessageId] = useState<number | null>(null);
   
   const abortControllerRef = useRef<AbortController | null>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -41,7 +45,7 @@ export function ChatRoomView({ roomId, onRoomCreated }: Props) {
   }, [roomId]);
 
   /** 채팅 내역 + 상태 로드 */
-useEffect(() => {
+  useEffect(() => {
   if (!roomId) {
     setMessages([]);
     setRoomStatus("UNKNOWN");
@@ -170,6 +174,14 @@ useEffect(() => {
         bottomRef.current?.scrollIntoView({ behavior: "auto" });
       }
 
+      if (roomId) {
+        const syncRes = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/conversation/rooms/${roomId}/messages`, { credentials: "include" });
+        if (syncRes.ok) {
+          const syncData = await syncRes.json();
+          setMessages(syncData);
+        }
+      }
+
       if (!roomId) {
         const roomsRes = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/conversation/rooms`, { credentials: "include" });
         const rooms = await roomsRes.json();
@@ -182,6 +194,33 @@ useEffect(() => {
       setLoading(false);
       abortControllerRef.current = null;
       setTimeout(() => inputRef.current?.focus(), 10);
+    }
+  };
+
+  const sendFeedbackRequest = async (msgId: number, satisfaction: string, reason?: string, comment?: string) => {
+    try {
+      await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/conversation/feedback`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message_id: msgId,
+          satisfaction: satisfaction,
+          reason: reason || null,
+          comment: comment || null
+        }),
+      });
+    } catch (e) {
+      console.error("Feedback error:", e);
+    }
+  };
+
+  const handleFeedbackClick = (msgId: number, score: "LIKE" | "DISLIKE") => {
+    if (score === "LIKE") {
+      void sendFeedbackRequest(msgId, "LIKE");
+    } else {
+      setTargetMessageId(msgId);
+      setIsModalOpen(true);
     }
   };
 
@@ -300,7 +339,7 @@ useEffect(() => {
               </div>
             </div>
           ) : (
-            messages.map((msg, idx) => <ChatMessage key={idx} role={msg.role} content={msg.content} />)
+            messages.map((msg, idx) => <ChatMessage key={idx} message_id={msg.message_id} role={msg.role} content={msg.content} onFeedback={handleFeedbackClick}/>)
           )}
           <div ref={bottomRef} className="h-24" />
         </div>
@@ -355,6 +394,17 @@ useEffect(() => {
           </p>
         </div>
       </div>
+      <Feedback 
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSubmit={async (reason: string, comment: string) => {
+          if (targetMessageId) {
+            await sendFeedbackRequest(targetMessageId, "DISLIKE", reason, comment);
+            setIsModalOpen(false);
+            alert("의견을 보내주셔서 감사합니다.");
+          }
+        }}
+      />
     </div>
   );
 }
