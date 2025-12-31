@@ -191,7 +191,6 @@ const handleSendMessage = async (textToSend?: string) => {
   setInput("");
   setSelectedFiles([]);
 
-  // ★ 중요: 이 스코프(함수 내부)에 업로드된 URL을 딱 박제해둡니다.
   let memoizedUrls: string[] = []; 
 
   try {
@@ -222,7 +221,6 @@ const handleSendMessage = async (textToSend?: string) => {
       });
     }
 
-    // 업로드 성공한 URL을 메모리에 고정
     memoizedUrls = uploadedUrlsForPreview;
 
     setMessages((prev) => [
@@ -272,7 +270,6 @@ const handleSendMessage = async (textToSend?: string) => {
       bottomRef.current?.scrollIntoView({ behavior: "auto" });
     }
 
-    // --- 동기화 로직 시작 ---
     if (roomId) {
       const syncRes = await fetch(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/conversation/rooms/${roomId}/messages`,
@@ -283,8 +280,7 @@ const handleSendMessage = async (textToSend?: string) => {
         const syncData: Message[] = await syncRes.json();
 
         setMessages(() => {
-          // 서버에서 온 데이터 중, '마지막 유저 메시지'를 찾아서 
-          // 우리가 아까 메모리에 박제해둔 memoizedUrls로 강제 교체합니다.
+
           const lastUserMsgIndex = [...syncData].reverse().findIndex(m => m.role === "USER");
           const targetIndex = lastUserMsgIndex !== -1 ? syncData.length - 1 - lastUserMsgIndex : -1;
 
@@ -297,7 +293,6 @@ const handleSendMessage = async (textToSend?: string) => {
         });
       }
     }
-    // --- 동기화 로직 끝 ---
 
     if (!roomId) {
       const roomsRes = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/conversation/rooms`, { credentials: "include" });
