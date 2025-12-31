@@ -28,25 +28,47 @@ const isUser = role === "USER";
           {isUser ? "나" : "AI"}
         </div>
         
-        <div className={`flex flex-col gap-1 max-w-[85%] ${isUser ? "items-end" : "items-start"}`}>
-        {file_urls && file_urls.length > 0 && (
+<div className={`flex flex-col gap-1 max-w-[85%] ${isUser ? "items-end" : "items-start"}`}>
+          {file_urls && file_urls.length > 0 && (
             <div className={`flex flex-wrap gap-2 ${isUser ? "justify-end" : "justify-start"}`}>
-            {file_urls.map((url, idx) => (
-                <div
-                key={idx}
-                className="relative w-48 h-48 rounded-xl overflow-hidden border border-black/5 bg-white"
-                >
-                <Image
-                    src={url}
-                    alt="첨부 이미지"
-                    fill
-                    className="object-contain"
-                    unoptimized
-                />
-                </div>
-            ))}
+              {file_urls.map((url, idx) => {
+                // 1. http로 시작하는 '정상적인 완성된 URL'인지 확인
+                const isRealUrl = url && url.startsWith('http');
+                // 2. 이미지 확장자 확인
+                const isImage = /\.(jpg|jpeg|png|webp|gif)($|\?)/i.test(url);
+
+                return (
+                  <div key={idx} className="relative w-48 h-48 rounded-xl overflow-hidden border border-black/5 bg-gray-50 flex items-center justify-center">
+                    {/* ★ 핵심: 이미지이면서 동시에 'http'로 시작하는 주소일 때만 Image 태그 렌더링 */}
+                    {isImage && isRealUrl ? (
+                      <Image
+                        src={url}
+                        alt="첨부 이미지"
+                        fill
+                        unoptimized={true}
+                        className="object-contain"
+                      />
+                    ) : isRealUrl ? (
+                      // http 주소는 맞는데 이미지가 아닌 경우 (문서 등)
+                      <a 
+                        href={url} 
+                        target="_blank" 
+                        rel="noopener noreferrer" 
+                        className="text-sm text-blue-500 underline"
+                      >
+                        파일 다운로드
+                      </a>
+                    ) : (
+                      // http 주소가 아닌 경우 (chat/2025/... 등) - 요청을 보내지 않고 대기 메시지 노출
+                      <div className="flex flex-col items-center p-4">
+                        <span className="text-[10px] text-gray-400 text-center">이미지 불러오는 중...</span>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
-        )}
+          )}
         {content && (
             <div
             className={`px-4 py-2.5 rounded-2xl text-[15px] leading-relaxed shadow-sm whitespace-pre-wrap
