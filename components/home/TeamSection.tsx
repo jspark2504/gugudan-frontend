@@ -51,13 +51,13 @@ export default function TeamSection() {
                 mascotRef.inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4",
               ].join(" ")}
             >
-              <div className="text-sm font-semibold text-gray-900 dark:text-gray-100 text-center">
-                <h2 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-gray-100">
+              <div className="text-sm font-semibold text-gray-900 text-center">
+                <h2 className="text-xl md:text-2xl font-bold text-gray-900">
                   구구단 팀
                 </h2>
                 우리는 이렇게 만들고 있어요
               </div>
-              <p className="mt-2 text-xs md:text-sm text-gray-600 dark:text-gray-400 text-center break-keep">
+              <p className="mt-2 text-xs md:text-sm text-gray-600 text-center break-keep">
                 구구단은 관계를 '정답'으로 재단하기보다,
                 <br />
                 사용자가 스스로 선택할 수 있도록 생각을 정리하는 데 집중해요.
@@ -90,7 +90,7 @@ export default function TeamSection() {
           </div>
         </div>
 
-        {/* ✅ 3 Cards - 스태거 애니메이션 */}
+{/* ✅ 3 Cards - 스태거 애니메이션 */}
         <div
           ref={cardsRef.ref}
           className="mt-10 grid md:grid-cols-3 gap-6"
@@ -99,7 +99,7 @@ export default function TeamSection() {
             <div
               key={card.title}
               className={[
-                "rounded-2xl bg-white/90 dark:bg-white/5 p-8 text-center border border-blue-100/70 dark:border-white/10 shadow-sm",
+                "rounded-2xl bg-white/90 p-8 text-center border border-blue-100/70 shadow-sm",
                 "transition-all duration-700 ease-out",
                 "hover:scale-[1.03] hover:shadow-md",
                 "will-change-transform",
@@ -110,13 +110,13 @@ export default function TeamSection() {
                 transitionDelay: cardsRef.inView ? `${idx * 150}ms` : "0ms" 
               }}
             >
-              <div className="mx-auto w-14 h-14 rounded-full bg-white dark:bg-white/10 flex items-center justify-center shadow">
+              <div className="mx-auto w-14 h-14 rounded-full bg-white flex items-center justify-center shadow">
                 {card.icon}
               </div>
-              <div className="mt-5 font-semibold text-gray-900 dark:text-gray-100">
+              <div className="mt-5 font-semibold text-gray-900">
                 {card.title}
               </div>
-              <p className="mt-2 text-sm text-gray-600 dark:text-gray-400 break-keep">
+              <p className="mt-2 text-sm text-gray-600 break-keep">
                 {card.desc}
               </p>
             </div>

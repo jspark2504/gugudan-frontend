@@ -93,7 +93,7 @@ export function AppHeader() {
   };
 
   return (
-    <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-sm border-b">
+    <header className="sticky top-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border-b dark:border-gray-800">
       <div className="max-w-7xl mx-auto px-4 py-3 flex items-center gap-4">
         {/* Logo */}
         <Link href={ROUTES.HOME ?? "/"} className="shrink-0">
@@ -103,13 +103,13 @@ export function AppHeader() {
         </Link>
 
         {/* Desktop Nav */}
-        <nav className="hidden md:flex flex-1 items-center justify-center gap-1 text-sm text-gray-700">
+        <nav className="hidden md:flex flex-1 items-center justify-center gap-1 text-sm text-gray-700 dark:text-gray-300">
           {NAV_ITEMS.map((it) => (
             <button
               key={it.id}
               type="button"
               onClick={() => onNav(it.id)}
-              className="px-3 py-2 rounded-full hover:bg-gray-50 transition-colors"
+              className="px-3 py-2 rounded-full hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
             >
               {it.label}
             </button>
@@ -120,7 +120,7 @@ export function AppHeader() {
         <div className="flex items-center gap-2 shrink-0">
           {/* Admin Badge (선택사항) */}
           {isAuthenticated && isAdmin && (
-            <span className="hidden sm:inline-flex text-xs font-semibold text-blue-600 bg-blue-50 border border-blue-100 px-2 py-1 rounded-full">
+            <span className="hidden sm:inline-flex text-xs font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 border border-blue-100 dark:border-blue-800 px-2 py-1 rounded-full">
               관리자
             </span>
           )}
@@ -131,7 +131,7 @@ export function AppHeader() {
               type="button"
               aria-label="menu"
               onClick={() => setOpen((v) => !v)}
-              className="h-10 w-10 rounded-full border border-gray-200 bg-white hover:bg-gray-50 flex items-center justify-center transition-colors"
+              className="h-10 w-10 rounded-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center justify-center transition-colors text-gray-700 dark:text-gray-300"
             >
               <span className="text-lg leading-none">☰</span>
             </button>
@@ -140,15 +140,15 @@ export function AppHeader() {
             {!isMobile && open && (
               <div
                 ref={menuRef}
-                className="absolute right-0 top-full mt-2 w-60 rounded-2xl border border-gray-200 bg-white shadow-lg p-2"
+                className="absolute right-0 top-full mt-2 w-60 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-lg p-2"
               >
                 {/* 섹션 네비 */}
                 <div className="px-2 py-2">
-                  <div className="text-xs text-gray-500 px-1 mb-2">이동</div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400 px-1 mb-2">이동</div>
                   {NAV_ITEMS.map((it) => (
                     <button
                       key={it.id}
-                      className="w-full text-left px-3 py-2 rounded-xl hover:bg-gray-50 transition-colors"
+                      className="w-full text-left px-3 py-2 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-gray-900 dark:text-gray-100"
                       onClick={() => onNav(it.id)}
                     >
                       {it.label}
@@ -156,14 +156,14 @@ export function AppHeader() {
                   ))}
                 </div>
 
-                <div className="my-1 h-px bg-gray-100" />
+                <div className="my-1 h-px bg-gray-100 dark:bg-gray-700" />
 
                 {/* 고객 지원 */}
                 <div className="px-2 py-2">
-                  <div className="text-xs text-gray-500 px-1 mb-2">고객 지원</div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400 px-1 mb-2">고객 지원</div>
                   
                   <button
-                    className="w-full text-left px-3 py-2 rounded-xl hover:bg-gray-50 transition-colors"
+                    className="w-full text-left px-3 py-2 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-gray-900 dark:text-gray-100"
                     onClick={() => go("/faq")}
                   >
                     자주 묻는 질문
@@ -171,14 +171,14 @@ export function AppHeader() {
 
                   {isAuthenticated ? (
                     <button
-                      className="w-full text-left px-3 py-2 rounded-xl hover:bg-gray-50 transition-colors"
+                      className="w-full text-left px-3 py-2 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-gray-900 dark:text-gray-100"
                       onClick={() => go("/inquiry")}
                     >
                       1:1 문의
                     </button>
                   ) : (
                     <button
-                      className="w-full text-left px-3 py-2 rounded-xl hover:bg-gray-50 transition-colors text-gray-400 cursor-not-allowed"
+                      className="w-full text-left px-3 py-2 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-gray-400 dark:text-gray-500 cursor-not-allowed"
                       onClick={() => alert("로그인이 필요한 서비스입니다.")}
                     >
                       1:1 문의 (로그인 필요)
@@ -186,34 +186,34 @@ export function AppHeader() {
                   )}
                 </div>
 
-                <div className="my-1 h-px bg-gray-100" />
+                <div className="my-1 h-px bg-gray-100 dark:bg-gray-700" />
 
                 {/* 계정 */}
                 {isAuthenticated ? (
                   <>
-                    <div className="px-3 py-2 text-sm text-gray-600">
-                      <div className="font-medium text-gray-900">
+                    <div className="px-3 py-2 text-sm text-gray-600 dark:text-gray-400">
+                      <div className="font-medium text-gray-900 dark:text-gray-100">
                         {user?.nickname ?? "사용자"}님
                         {isAdmin && (
-                          <span className="ml-1 text-blue-600 font-semibold">
+                          <span className="ml-1 text-blue-600 dark:text-blue-400 font-semibold">
                             (관리자)
                           </span>
                         )}
                       </div>
-                      <div className="text-xs text-gray-500">계정</div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400">계정</div>
                     </div>
 
                     <button
-                      className="w-full text-left px-3 py-2 rounded-xl hover:bg-gray-50 transition-colors"
+                      className="w-full text-left px-3 py-2 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-gray-900 dark:text-gray-100"
                       onClick={() => go(ROUTES.MY_PAGE)}
                     >
                       My Page
                     </button>
 
-                    <div className="my-1 h-px bg-gray-100" />
+                    <div className="my-1 h-px bg-gray-100 dark:bg-gray-700" />
 
                     <button
-                      className="w-full text-left px-3 py-2 rounded-xl hover:bg-gray-50 text-red-600 transition-colors"
+                      className="w-full text-left px-3 py-2 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 text-red-600 dark:text-red-400 transition-colors"
                       onClick={onLogout}
                     >
                       Logout
@@ -221,7 +221,7 @@ export function AppHeader() {
                   </>
                 ) : (
                   <button
-                    className="w-full text-left px-3 py-2 rounded-xl hover:bg-gray-50 transition-colors font-medium"
+                    className="w-full text-left px-3 py-2 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors font-medium text-gray-900 dark:text-gray-100"
                     onClick={() => go(ROUTES.LOGIN)}
                   >
                     Login
@@ -234,16 +234,16 @@ export function AppHeader() {
           {/* Mobile bottom sheet */}
           {isMobile && open && (
             <div className="fixed inset-0 z-50">
-              <div className="absolute inset-0 bg-black/30" onClick={close} />
-              <div className="absolute bottom-0 left-0 right-0 rounded-t-3xl bg-white p-4 shadow-2xl">
-                <div className="mx-auto h-1 w-10 rounded-full bg-gray-200 mb-3" />
+              <div className="absolute inset-0 bg-black/30 dark:bg-black/60" onClick={close} />
+              <div className="absolute bottom-0 left-0 right-0 rounded-t-3xl bg-white dark:bg-gray-800 p-4 shadow-2xl">
+                <div className="mx-auto h-1 w-10 rounded-full bg-gray-200 dark:bg-gray-600 mb-3" />
 
                 {/* 섹션 네비 */}
                 <div className="grid gap-2 mb-2">
                   {NAV_ITEMS.map((it) => (
                     <button
                       key={it.id}
-                      className="w-full text-left px-4 py-3 rounded-2xl hover:bg-gray-50 transition-colors"
+                      className="w-full text-left px-4 py-3 rounded-2xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-gray-900 dark:text-gray-100"
                       onClick={() => onNav(it.id)}
                     >
                       {it.label}
@@ -251,14 +251,14 @@ export function AppHeader() {
                   ))}
                 </div>
 
-                <div className="my-2 h-px bg-gray-100" />
+                <div className="my-2 h-px bg-gray-100 dark:bg-gray-700" />
 
                 {/* 고객 지원 */}
                 <div className="mb-2">
-                  <div className="text-xs text-gray-500 px-4 mb-2">고객 지원</div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400 px-4 mb-2">고객 지원</div>
                   
                   <button
-                    className="w-full text-left px-4 py-3 rounded-2xl hover:bg-gray-50 transition-colors"
+                    className="w-full text-left px-4 py-3 rounded-2xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-gray-900 dark:text-gray-100"
                     onClick={() => go("/faq")}
                   >
                     자주 묻는 질문
@@ -266,14 +266,14 @@ export function AppHeader() {
 
                   {isAuthenticated ? (
                     <button
-                      className="w-full text-left px-4 py-3 rounded-2xl hover:bg-gray-50 transition-colors"
+                      className="w-full text-left px-4 py-3 rounded-2xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-gray-900 dark:text-gray-100"
                       onClick={() => go("/inquiry")}
                     >
                       1:1 문의
                     </button>
                   ) : (
                     <button
-                      className="w-full text-left px-4 py-3 rounded-2xl hover:bg-gray-50 transition-colors text-gray-400"
+                      className="w-full text-left px-4 py-3 rounded-2xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-gray-400 dark:text-gray-500"
                       onClick={() => alert("로그인이 필요한 서비스입니다.")}
                     >
                       1:1 문의 (로그인 필요)
@@ -281,19 +281,19 @@ export function AppHeader() {
                   )}
                 </div>
 
-                <div className="my-2 h-px bg-gray-100" />
+                <div className="my-2 h-px bg-gray-100 dark:bg-gray-700" />
 
                 {/* 계정 */}
                 {isAuthenticated ? (
                   <>
                     <button
-                      className="w-full text-left px-4 py-3 rounded-2xl hover:bg-gray-50 transition-colors"
+                      className="w-full text-left px-4 py-3 rounded-2xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-gray-900 dark:text-gray-100"
                       onClick={() => go(ROUTES.MY_PAGE)}
                     >
                       My Page
                     </button>
                     <button
-                      className="w-full text-left px-4 py-3 rounded-2xl hover:bg-gray-50 text-red-600 transition-colors"
+                      className="w-full text-left px-4 py-3 rounded-2xl hover:bg-gray-50 dark:hover:bg-gray-700 text-red-600 dark:text-red-400 transition-colors"
                       onClick={onLogout}
                     >
                       Logout
@@ -301,7 +301,7 @@ export function AppHeader() {
                   </>
                 ) : (
                   <button
-                    className="w-full text-left px-4 py-3 rounded-2xl hover:bg-gray-50 transition-colors"
+                    className="w-full text-left px-4 py-3 rounded-2xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-gray-900 dark:text-gray-100"
                     onClick={() => go(ROUTES.LOGIN)}
                   >
                     Login

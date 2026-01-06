@@ -25,10 +25,10 @@ export default function HomeSpecialReasonSection({
           headerRef.inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8",
         ].join(" ")}
       >
-        <h3 className="text-xl md:text-2xl font-semibold text-gray-900 dark:text-gray-200 font-bold">
+        <h3 className="text-xl md:text-2xl font-semibold text-gray-900 font-bold">
           러브노트는 이렇게 달라요
         </h3>
-        <p className="mt-3 text-sm md:text-base text-gray-600 break-keep dark:text-gray-400 leading-relaxed">
+        <p className="mt-3 text-sm md:text-base text-gray-600 break-keep leading-relaxed">
           공감 중심의 대화로
           <br className="hidden md:block" />
           언제 어디서나 편안하게 마음을 꺼낼 수 있어요

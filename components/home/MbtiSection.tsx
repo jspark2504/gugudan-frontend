@@ -81,12 +81,12 @@ export default function MbtiSection() {
             ✨ MBTI로 살펴보는 관계 이야기
           </div>
 
-          <h2 className="mt-5 text-2xl md:text-3xl font-bold text-gray-900 dark:text-gray-300">
+          <h2 className="mt-5 text-2xl md:text-3xl font-bold text-gray-900">
             지금 마음에 맞는 관계 이야기를<br className="hidden md:block" />
             MBTI로 천천히 살펴볼 수 있어요
           </h2>
 
-          <p className="mt-4 text-sm md:text-base text-gray-600 break-keep dark:text-gray-400 leading-relaxed">
+          <p className="mt-4 text-sm md:text-base text-gray-600 break-keep leading-relaxed">
             각 MBTI 성향을 참고해,
             <br className="hidden md:block" />
             지금 마음에 가까운 관계를 천천히 살펴봐요.
