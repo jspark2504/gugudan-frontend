@@ -207,17 +207,17 @@ function getCategoryExamples(category: string) {
             <div className="max-w-4xl mx-auto text-center">
               <div className="text-6xl mb-4">{currentCategory.emoji}</div>
 
-              <h1 className="mb-3 text-3xl md:text-5xl font-extrabold text-gray-900 dark:text-white">
+              <h1 className="mb-3 text-3xl md:text-5xl font-extrabold text-gray-900">
                 {mbtiUpperCase} × {currentCategory.title}
               </h1>
 
-              <p className="text-lg md:text-xl text-gray-700 dark:text-gray-200 mb-2">
+              <p className="text-lg md:text-xl text-gray-800 mb-2">
                 {currentMBTI.name}
                 {currentMBTI.oneLiner ? ` · ${currentMBTI.oneLiner}` : ""}{" "}
-                <span className="text-gray-500 dark:text-gray-400">({currentCategory.title} 가이드)</span>
+                <span className="text-gray-700">({currentCategory.title} 가이드)</span>
               </p>
 
-              <p className="text-sm md:text-base text-gray-600 dark:text-gray-300 mb-6">
+              <p className="text-sm md:text-base text-gray-700 mb-6">
                 MBTI 기반으로 {currentCategory.title}에서 자주 나타나는 흐름을 간단히 정리했어요.
               </p>
 
@@ -225,7 +225,7 @@ function getCategoryExamples(category: string) {
                 {currentMBTI.traits.map((trait: string, index: number) => (
                   <span
                     key={index}
-                    className="px-4 py-2 bg-white/90 dark:bg-white/10 rounded-full text-gray-800 dark:text-gray-100 shadow-sm"
+                    className="px-4 py-2 bg-white/90 rounded-full text-gray-900 shadow-sm"
                   >
                     {trait}
                   </span>
@@ -281,7 +281,7 @@ function getCategoryExamples(category: string) {
 
           {/* Other Categories */}
           <div className="max-w-4xl mx-auto">
-            <h3 className="text-center mb-8 text-lg font-bold text-gray-900 dark:text-gray-100">
+            <h3 className="text-center mb-8 text-lg font-bold text-gray-900 dark:text-white">
               {mbtiUpperCase}의 다른 관계 가이드도 확인해보세요
             </h3>
 
@@ -302,8 +302,8 @@ function getCategoryExamples(category: string) {
                     className={`block p-8 rounded-2xl bg-gradient-to-br ${info.bg} hover:shadow-lg transition-all duration-300 hover:scale-[1.02] text-center`}
                   >
                     <div className="text-4xl mb-3">{info.emoji}</div>
-                    <h4 className="mb-2 text-lg font-bold text-gray-900 dark:text-gray-100">{info.title}</h4>
-                    <p className="text-gray-700 dark:text-gray-200">
+                    <h4 className="mb-2 text-lg font-bold text-gray-900">{info.title}</h4>
+                    <p className="text-gray-800">
                       {mbtiUpperCase}의 {info.title} 가이드 보기
                     </p>
                   </Link>
@@ -327,10 +327,13 @@ function getCategoryExamples(category: string) {
 
                 <Link
                   href={`/mbti/${mbtiType}/${category}/faq`}
-                  className="text-sm font-medium text-purple-700 dark:text-purple-200 hover:underline"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-purple-600 text-white text-sm font-medium hover:bg-purple-700 hover:gap-3 transition-all shrink-0"
                   onClick={() => track("mbti_faq_all_click", { mbtiType: mbtiUpperCase, category })}
                 >
-                  전체 FAQ 보기 →
+                  전체 FAQ 보기
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
                 </Link>
               </div>
 
@@ -504,8 +507,8 @@ function getCategoryExamples(category: string) {
                               onClick={() => setSelectedCategory(cat.key)}
                               className={`p-3 rounded-lg border-2 transition-all ${
                                 selectedCategory === cat.key
-                                  ? `bg-${cat.color}-100 dark:bg-${cat.color}-900/30 border-${cat.color}-400 dark:border-${cat.color}-600`
-                                  : `bg-white dark:bg-neutral-900 border-${cat.color}-200 dark:border-${cat.color}-800/30 hover:bg-${cat.color}-50 dark:hover:bg-${cat.color}-900/20`
+                                  ? "bg-purple-100 dark:bg-purple-900/30 border-purple-400 dark:border-purple-600"
+                                  : "bg-white dark:bg-neutral-900 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-neutral-800"
                               }`}
                             >
                               <div className="text-center">
@@ -513,7 +516,7 @@ function getCategoryExamples(category: string) {
                                   <span className="text-xl">{cat.icon}</span>
                                   <p className={`text-base font-bold ${
                                     selectedCategory === cat.key
-                                      ? `text-${cat.color}-700 dark:text-${cat.color}-300`
+                                      ? "text-purple-700 dark:text-purple-300"
                                       : "text-gray-700 dark:text-gray-300"
                                   }`}>
                                     {cat.label}
@@ -521,7 +524,7 @@ function getCategoryExamples(category: string) {
                                 </div>
                                 <p className={`text-xs ${
                                   selectedCategory === cat.key
-                                    ? `text-${cat.color}-600 dark:text-${cat.color}-400`
+                                    ? "text-purple-600 dark:text-purple-400"
                                     : "text-gray-500 dark:text-gray-400"
                                 }`}>
                                   {cat.hint}
