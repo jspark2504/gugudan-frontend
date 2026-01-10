@@ -10,8 +10,10 @@ import {Button} from "@/components/ui/Button";
 import {Avatar, AvatarFallback} from "@/components/ui/Avatar";
 import {Badge} from "@/components/ui/Badge";
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/Tabs";
-import {MessageCircle, User as UserIcon, Sparkles, Heart, Calendar, Search} from "lucide-react";
+import {MessageCircle, User as UserIcon, Sparkles, Heart, Calendar, Search, FileText} from "lucide-react";
 import {STORAGE_KEYS} from "@/lib/constants";
+import {SurveyModal} from "@/components/modal/Surveymodal";
+import {SurveyContent} from "@/components/modal/_content/survey";
 
 type ConsultationSession = {
   id: string;
@@ -37,6 +39,11 @@ function getInitials(name?: string) {
 
 function formatJoinDate(iso?: string) {
   if (!iso) return "-";
+  // YYYY-MM-DD 형식도 처리
+  if (iso.includes('-') && iso.match(/^\d{4}-\d{2}-\d{2}$/)) {
+    const [yyyy, mm, dd] = iso.split('-');
+    return `${Number(yyyy)}년 ${Number(mm)}월 ${Number(dd)}일`;
+  }
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return iso;
   const yyyy = d.getFullYear();
@@ -104,6 +111,11 @@ export function MyPage() {
   const [roomsLoading, setRoomsLoading] = useState(false);
   const [roomsError, setRoomsError] = useState<string | null>(null);
 
+  // 설문 관련 상태
+  const [isSurveyCompleted, setIsSurveyCompleted] = useState(false);
+  const [isSurveyOpen, setIsSurveyOpen] = useState(false);
+  const [surveyContent, setSurveyContent] = useState<SurveyContent | null>(null);
+
   const fetchLatestProfile = useCallback(async () => {
     try {
       const res = await fetch(`${API_BASE}/api/v1/auth/me`, {
@@ -132,6 +144,116 @@ export function MyPage() {
     if (!user) return;
     fetchLatestProfile();
   }, [user, fetchLatestProfile]);
+
+  // 페이지 로딩 시 설문 여부 확인 (backend에서 불러오기) - /survey/status 엔드포인트 사용
+  useEffect(() => {
+    if (!user) return;
+
+    const checkSurveyStatus = async () => {
+      try {
+        const response = await fetch(`${API_BASE}/survey/status`, {
+          credentials: "include",
+        });
+
+        if (!response.ok) {
+          return;
+        }
+
+        const data = await response.json();
+        
+        // completed 필드로 설문 완료 여부 확인
+        setIsSurveyCompleted(data?.completed === true);
+      } catch (error) {
+        // 설문 상태 확인 실패 시 조용히 처리
+      }
+    };
+
+    checkSurveyStatus();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
+
+  // 설문 데이터 가져오기
+  const fetchSurvey = useCallback(async () => {
+    if (isSurveyCompleted) return;
+
+    try {
+      const response = await fetch(`${API_BASE}/survey/questions`, {
+        credentials: "include",
+      });
+
+      if (!response.ok) {
+        return;
+      }
+
+      const data = await response.json();
+
+      // 설문 데이터 검증 및 설정
+      if (data && data.questions && Array.isArray(data.questions)) {
+        // 질문 데이터 검증
+        const validQuestions = data.questions.filter((q: any) => {
+          // 기본 구조 검증
+          if (!q || typeof q !== "object") return false;
+          
+          // 타입별 필수 필드 검증
+          if (q.type === "single") {
+            return q.question && Array.isArray(q.options) && q.options.length > 0;
+          } else if (q.type === "text") {
+            return q.question && q.id;
+          } else if (q.type === "email") {
+            return q.question && q.id;
+          } else if (q.type === "done") {
+            return q.title;
+          }
+          
+          return false;
+        });
+
+        if (validQuestions.length === 0) {
+          console.error("[MyPage] 유효한 설문 질문이 없습니다.");
+          return;
+        }
+
+        setSurveyContent({
+          title: data.title || "간단한 피드백을 들려주세요",
+          subtitle: data.subtitle,
+          footer: data.footer,
+          questions: validQuestions,
+        });
+        setIsSurveyOpen(true);
+      } else {
+        console.error("[MyPage] 설문 데이터 형식이 올바르지 않습니다.", data);
+      }
+      } catch (error) {
+        // 설문 데이터 가져오기 실패 시 조용히 처리
+      }
+  }, [API_BASE, isSurveyCompleted]);
+
+  // 설문 완료 처리
+  const handleSurveyComplete = useCallback(async (answers: Record<string, string>) => {
+    try {
+      const response = await fetch(`${API_BASE}/survey/responses`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ answers }),
+      });
+
+      if (response.ok) {
+        // 설문 완료 상태로 변경
+        setIsSurveyCompleted(true);
+        // 설문 상태 다시 확인
+        const statusResponse = await fetch(`${API_BASE}/survey/status`, {
+          credentials: "include",
+        });
+        if (statusResponse.ok) {
+          const statusData = await statusResponse.json();
+          setIsSurveyCompleted(statusData?.completed === true);
+        }
+      }
+    } catch (e) {
+      // 설문 제출 실패 시 조용히 처리
+    }
+  }, [API_BASE]);
 
   const fetchRooms = useCallback(async () => {
     if (!user) return;
@@ -331,6 +453,7 @@ export function MyPage() {
     }
   }
 
+
   return (
     // ✅ 메인 페이지와 동일한 밝은 배경
 <div className="min-h-[calc(100vh-64px)] bg-gradient-to-b from-purple-50 to-pink-50">
@@ -349,23 +472,40 @@ export function MyPage() {
           </div>
 
           {/* Profile Header */}
-          <Card className="mb-8 border-0 bg-white shadow-xl overflow-hidden">            
+          <Card className="mb-8 border-0 bg-white shadow-xl overflow-hidden relative">            
             <CardContent className="pt-8 pb-6">
               <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
                 <div className="relative group">
                   <Avatar className="relative w-24 h-24 border-4 border-white shadow-xl">
                     <AvatarFallback className="bg-gray-100 text-purple-700 text-2xl font-bold">
-
                       {getInitials(nickname)}
                     </AvatarFallback>
                   </Avatar>
                 </div>
 
                 <div className="flex-1 text-center md:text-left">
-                  <h2 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
-                    {nickname}
-                  </h2>
-                  <p className="text-gray-600 mb-6">{email}</p>
+                  <div className="flex items-start justify-between gap-4 mb-2">
+                    <div className="flex-1">
+                      <h2 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
+                        {nickname}
+                      </h2>
+                      <p className="text-gray-600 mb-6">{email}</p>
+                    </div>
+                    {/* 설문 버튼 (우측 상단) */}
+                    {!isSurveyCompleted && (
+                      <Button
+                        variant="outline"
+                        onClick={() => {
+                          void fetchSurvey();
+                        }}
+                        className="!border-purple-300 !bg-white !text-purple-700 hover:!bg-purple-50 whitespace-nowrap"
+                        title="피드백 설문하기"
+                      >
+                        <FileText className="w-4 h-4 mr-2" />
+                        설문하기
+                      </Button>
+                    )}
+                  </div>
 
                   <div className="flex flex-wrap justify-center md:justify-start gap-6">
                     <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-purple-50">
@@ -823,6 +963,19 @@ export function MyPage() {
           </Tabs>
         </div>
       </div>
+
+      {/* Survey Modal */}
+      {isSurveyOpen && surveyContent && (
+        <SurveyModal
+          isOpen={isSurveyOpen}
+          onClose={() => {
+            setIsSurveyOpen(false);
+            setSurveyContent(null);
+          }}
+          onComplete={handleSurveyComplete}
+          surveyContent={surveyContent}
+        />
+      )}
 
       <style jsx global>{`
         @keyframes fade-in {

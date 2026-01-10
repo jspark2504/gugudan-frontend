@@ -351,15 +351,19 @@ export default function SimulationRoom({ initialChatId, onNewChatStarted }: Chat
 
   return (
     <div className="flex flex-col h-full bg-gradient-to-b from-purple-50 to-pink-50 dark:from-gray-900 dark:to-gray-950">
-      <header className="bg-white/60 dark:bg-gray-900/60 backdrop-blur-md border-b border-purple-100 dark:border-gray-700 px-6 py-4 flex items-center justify-between sticky top-0 z-10">
-        <div className="flex items-center gap-4">
-          <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-purple-600 to-indigo-500 flex items-center justify-center text-white font-black">{selectedMbti?.[0] || "?"}</div>
-          <div>
-            <h2 className="font-bold text-sm text-gray-900 dark:text-pink-200">{selectedMbti} ({selectedGender})</h2>
-            <p className="text-[11px] text-gray-500 dark:text-pink-300">{selectedTopic === "custom" ? "커스텀 상황" : TOPICS.find(t => t.id === selectedTopic)?.label}</p>
+      <header className="bg-white/60 dark:bg-gray-900/60 backdrop-blur-md border-b border-purple-100 dark:border-gray-700 px-4 md:px-6 py-4 flex items-center gap-3 sticky top-0 z-10">
+        {/* 모바일: 햄버거 메뉴 공간 확보 */}
+        <div className="md:hidden w-10 flex-shrink-0" />
+        
+        {/* 텍스트와 아이콘을 같은 줄에 배치 */}
+        <div className="flex items-center gap-4 flex-1 min-w-0">
+          <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-purple-600 to-indigo-500 flex items-center justify-center text-white font-black flex-shrink-0">{selectedMbti?.[0] || "?"}</div>
+          <div className="flex-1 min-w-0">
+            <h2 className="font-bold text-sm text-gray-900 dark:text-pink-200 whitespace-nowrap">{selectedMbti} ({selectedGender})</h2>
+            <p className="text-[11px] text-gray-500 dark:text-pink-300 whitespace-nowrap">{selectedTopic === "custom" ? "커스텀 상황" : TOPICS.find(t => t.id === selectedTopic)?.label}</p>
           </div>
         </div>
-        <ShieldCheck className="w-5 h-5 text-purple-500 dark:text-pink-400 opacity-50" />
+        <ShieldCheck className="w-5 h-5 text-purple-500 dark:text-pink-400 opacity-50 flex-shrink-0" />
       </header>
 
       <main ref={scrollRef} className="flex-1 overflow-y-auto p-4 md:p-8 space-y-6">
