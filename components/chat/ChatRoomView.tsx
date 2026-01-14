@@ -21,6 +21,8 @@ import {
     DocumentTextIcon
 } from "@heroicons/react/24/outline";
 import Image from "next/image";
+import type { SurveyResponse } from "@/components/modal/_content/survey";
+import { parseSurveyResponse } from "@/components/modal/_content/survey";
 
 type Message = {
   message_id?: number;
@@ -119,60 +121,35 @@ export function ChatRoomView({ roomId, onRoomCreated }: Props) {
   }, [user]);
 
   // 설문 데이터 가져오기
-  const fetchSurvey = useCallback(async () => {
-    if (isSurveyCompleted) return;
+const fetchSurvey = useCallback(async () => {
+  if (isSurveyCompleted) return;
 
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/survey/questions`, {
-        credentials: "include",
-      });
+  const base = process.env.NEXT_PUBLIC_API_BASE_URL;
+  if (!base) return;
 
-      if (!response.ok) {
-        return;
-      }
+  try {
+    const res = await fetch(`${base}/survey/questions`, {
+      credentials: "include",
+      headers: { Accept: "application/json" },
+      cache: "no-store",
+    });
+    if (!res.ok) return;
 
-      const data = await response.json();
+    const data = (await res.json()) as SurveyResponse;
 
-      // 설문 데이터 검증 및 설정
-      if (data && data.questions && Array.isArray(data.questions)) {
-        // 질문 데이터 검증
-        const validQuestions = data.questions.filter((q: any) => {
-          // 기본 구조 검증
-          if (!q || typeof q !== "object") return false;
-          
-          // 타입별 필수 필드 검증
-          if (q.type === "single") {
-            return q.question && Array.isArray(q.options) && q.options.length > 0;
-          } else if (q.type === "text") {
-            return q.question && q.id;
-          } else if (q.type === "email") {
-            return q.question && q.id;
-          } else if (q.type === "done") {
-            return q.title;
-          }
-          
-          return false;
-        });
-
-        if (validQuestions.length === 0) {
-          console.error("[ChatRoomView] 유효한 설문 질문이 없습니다.");
-          return;
-        }
-
-        setSurveyContent({
-          title: data.title || "간단한 피드백을 들려주세요",
-          subtitle: data.subtitle,
-          footer: data.footer,
-          questions: validQuestions,
-        });
-        setIsSurveyOpen(true);
-      } else {
-        console.error("[ChatRoomView] 설문 데이터 형식이 올바르지 않습니다.", data);
-      }
-    } catch (error) {
-      console.error("[ChatRoomView] 설문 데이터 가져오기 에러:", error);
+    const { content, reason } = parseSurveyResponse(data);
+    if (!content) {
+      // show=false도 여기로 들어오는데, 그건 정상이라 debug만
+      console.log("[ChatRoomView] survey skipped:", reason);
+      return;
     }
-  }, [isSurveyCompleted]);
+
+    setSurveyContent(content);
+    setIsSurveyOpen(true);
+  } catch (e) {
+    console.error("[ChatRoomView] fetchSurvey error:", e);
+  }
+}, [isSurveyCompleted, setSurveyContent, setIsSurveyOpen]);
 
   // 설문 완료 처리
   const handleSurveyComplete = useCallback(async (answers: Record<string, string>) => {
